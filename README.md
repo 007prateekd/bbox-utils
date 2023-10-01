@@ -3,7 +3,7 @@
 ## What
 Just a small utility script that contains simple functions to
 - generate a binary mask and the corresponding bounding box coordinates of a subject in an image.
-- do simple transformations on an image (i.e. rotation, scaling, warping, overlaying, cropping, square resize) and modify the bounding box coordinates accordingly (which could be quite challenging in some cases! For example, check [this](https://github.com/007prateekd/bbox-utils/blob/16d930da01371b558213cbf6255b4af6c8a69511/main.py#L140-L145)).
+- do simple transformations on an image (i.e. rotation, scaling, warping, overlaying, cropping, square resize) and modify the bounding box coordinates accordingly which could be quite challenging in some cases! For example, check [this](https://github.com/007prateekd/bbox-utils/blob/16d930da01371b558213cbf6255b4af6c8a69511/main.py#L140-L145).
 
 ## Why
 While creating a synthetic dataset for an object detection use-case, I often ran into image transformations where I had a hard time modifying the corresponding bounding box coordinates with respect to the transformation applied. So, I created these helper functions which do the same. I have used PIL and OpenCV interchangably as both have some functionalities which are easier to use.
