@@ -190,8 +190,8 @@ def draw_points(image, box):
     return draw
 
 
-def main():
-    img = Image.open("sample.jpg")
+def main(display=True, save=True):
+    img = Image.open("images/sample.jpg")
     background = Image.new("RGB", (2 * img.size[0], 2 * img.size[1]), (255, 255, 255))
     mask, box = get_mask_simple(img, thresh=150)
     overlayed, box = overlay(background, img, mask, box, shift_x=250, shift_y=250)
@@ -199,15 +199,24 @@ def main():
     rotated, box = rotate(scaled, box, angle=70)
     warped, box = warp(rotated, box)
     draw = draw_points(warped, box)
-
-    imshow(PIL_to_cv2(img), "Image")
-    imshow(PIL_to_cv2(mask), "Mask")
-    imshow(PIL_to_cv2(overlayed), "Overlayed")
-    imshow(PIL_to_cv2(scaled), "Scaled")
-    imshow(PIL_to_cv2(rotated), "Rotated")
-    imshow(PIL_to_cv2(warped), "Warped")
-    imshow(draw, "Bounding Box")
+    if display:
+        imshow(PIL_to_cv2(img), "Image")
+        imshow(PIL_to_cv2(mask), "Mask")
+        imshow(PIL_to_cv2(overlayed), "Overlayed")
+        imshow(PIL_to_cv2(scaled), "Scaled")
+        imshow(PIL_to_cv2(rotated), "Rotated")
+        imshow(PIL_to_cv2(warped), "Warped")
+        imshow(draw, "Bounding Box")
+    if save:
+        cv2.imwrite("images/mask.jpg", PIL_to_cv2(mask))
+        cv2.imwrite("images/overlayed.jpg", PIL_to_cv2(overlayed))
+        cv2.imwrite("images/scaled.jpg", PIL_to_cv2(scaled))
+        cv2.imwrite("images/rotated.jpg", PIL_to_cv2(rotated))
+        cv2.imwrite("images/warped.jpg", PIL_to_cv2(warped))
+        cv2.imwrite("images/bounding_box.jpg", draw)
 
 
 if __name__ == "__main__":
-    main()
+    display = True
+    save = True
+    main(display, save)
