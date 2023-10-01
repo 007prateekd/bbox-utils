@@ -174,7 +174,62 @@ def warp(image, box, warp_x=15, warp_y=15):
     return cv2_to_PIL(image), box_noisy
  
 
-def draw_points(image, box):
+def crop_center(image, box, crop):
+    """Crops the image to the center with `crop` pixels being cut from each side of the image.
+
+    Args:
+        image (PIL.Image): Image in PIL format.
+        box (ndarray): Bounding box coordinates.
+        crop (int): Number of pixels to be cut from each side.
+
+    Returns:
+        PIL.Image: Cropped image.
+        ndarray: Modified bounding box coordinates.
+    """
+    w, h = image.size
+    image = image.crop((crop, crop, w - crop, h - crop))
+    for i in range(len(box)):
+        box[i][0] -= crop
+        box[i][1] -= crop
+    return image, box
+
+
+def resize_and_pad_square(image, box, size):
+    """Resizes the image to a square of side `size` with zero-padding to preserve aspect ratio.
+
+    Args:
+        image (ndaray): Image in OpenCV format.
+        box (ndarray): Bounding box coordinates.
+        size (tuple): Tuple containing target (height, width).
+
+    Returns:
+        ndaray: Square and padded image.
+        ndarray: Modified bounding box coordinates.
+    """
+    h, w = image.shape[:2]
+    c = image.shape[2] if len(image.shape) > 2 else 1
+    if h == w: 
+        return cv2.resize(image, size, cv2.INTER_AREA)
+    dif = h if h > w else w
+    interpolation = cv2.INTER_AREA if dif > (size[0] + size[1]) // 2 else cv2.INTER_CUBIC
+    x_pos = (dif - w) // 2
+    y_pos = (dif - h) // 2
+    if len(image.shape) == 2:
+        mask = np.zeros((dif, dif), dtype=image.dtype)
+        mask[y_pos:y_pos+h, x_pos:x_pos+w] = image
+    else:
+        mask = np.zeros((dif, dif, c), dtype=image.dtype)
+        mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = image
+    image = cv2.resize(mask, size, interpolation)
+    box_new = []
+    for i in range(4):
+        x_new = round((box[i][0] + x_pos) * (size[0] / dif))
+        y_new = round((box[i][1] + y_pos) * (size[0] / dif))
+        box_new.append([x_new, y_new])
+    return image, box_new
+
+
+def draw_box(image, box):
     """Draws the 4 corners of the bounding box on the image.
 
     Args:
@@ -198,8 +253,10 @@ def main(path, display, save):
     scaled, box = scale_down(overlayed, box, factor=2.5)
     rotated, box = rotate(scaled, box, angle=70)
     warped, box = warp(rotated, box)
-    draw = draw_points(warped, box)
-    
+    cropped, box = crop_center(warped, box, crop=100)
+    resized, box = resize_and_pad_square(PIL_to_cv2(cropped), box, size=(768, 768))
+    draw = draw_box(cv2_to_PIL(resized), box)
+
     if display:
         imshow(PIL_to_cv2(img), "Image")
         imshow(PIL_to_cv2(mask), "Mask")
@@ -207,6 +264,8 @@ def main(path, display, save):
         imshow(PIL_to_cv2(scaled), "Scaled")
         imshow(PIL_to_cv2(rotated), "Rotated")
         imshow(PIL_to_cv2(warped), "Warped")
+        imshow(PIL_to_cv2(cropped), "Cropped")
+        imshow(resized, "Resized")
         imshow(draw, "Bounding Box")
     if save:
         cv2.imwrite("images/mask.jpg", PIL_to_cv2(mask))
@@ -214,11 +273,13 @@ def main(path, display, save):
         cv2.imwrite("images/scaled.jpg", PIL_to_cv2(scaled))
         cv2.imwrite("images/rotated.jpg", PIL_to_cv2(rotated))
         cv2.imwrite("images/warped.jpg", PIL_to_cv2(warped))
+        cv2.imwrite("images/cropped.jpg", PIL_to_cv2(cropped))
+        cv2.imwrite("images/resized.jpg", resized)
         cv2.imwrite("images/bounding_box.jpg", draw)
 
 
 if __name__ == "__main__":
     path = "images/sample.jpg"
-    display = True
+    display = False
     save = True
-    main(display, save, path)
+    main(path, display, save)
