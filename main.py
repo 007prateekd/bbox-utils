@@ -190,7 +190,7 @@ def draw_points(image, box):
     return draw
 
 
-def main(display=True, save=True):
+def main(display, save):
     img = Image.open("images/sample.jpg")
     background = Image.new("RGB", (2 * img.size[0], 2 * img.size[1]), (255, 255, 255))
     mask, box = get_mask_simple(img, thresh=150)
