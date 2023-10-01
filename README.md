@@ -16,32 +16,26 @@ Run `python main.py` and the outputs would pop up one by one. The only requireme
 <summary>Source image</summary>
 <img src=images/sample.jpg>
 </details>
-
 <details>
 <summary>Binary mask of source image</summary>
 <img src=images/mask.jpg>
 </details>
-
 <details>
 <summary>Overlaying source image on a white background</summary>
 <img src=images/overlayed.jpg>
 </details>
-
 <details>
-<summary>Scaled image (if it doesn't look scaled, zoom in to see less details compared to the previous image)</summary>
+<summary>Scaled image</summary>
 <img src=images/scaled.jpg>
 </details>
-
 <details>
 <summary>Rotated image</summary>
 <img src=images/rotated.jpg>
 </details>
-
 <details>
 <summary>Warped image</summary>
 <img src=images/warped.jpg>
 </details>
-
 <details>
 <summary>Final bounding box coordinates</summary>
 <img src=images/bounding_box.jpg>
