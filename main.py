@@ -199,6 +199,7 @@ def main(path, display, save):
     rotated, box = rotate(scaled, box, angle=70)
     warped, box = warp(rotated, box)
     draw = draw_points(warped, box)
+    
     if display:
         imshow(PIL_to_cv2(img), "Image")
         imshow(PIL_to_cv2(mask), "Mask")
